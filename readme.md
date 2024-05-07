@@ -12,13 +12,11 @@ Please run the ETL at your site and incorporate the data in your VDW.
 Please complete the workplan by June 1, 2024.
 
 ## Workplan Package
-  vdw_census_demog_dec_2020.zip
-
 Files Included in Zip file:
 * sas/vdw_census_demog_dec_2020.sas
 * input/qa_macros.sas 
 * input/custom_macros.sas 
-* input/qa_macros.sas 
+* input/vdw_variable_calculations.sas 
 * local_only/info.md
 * document/sample_census_key.txt
 
@@ -42,11 +40,10 @@ You can get a key in about two minutes by:
 ```
 1. The workplan program has a clearly marked edit section near the top of the program.  Please complete the edits as directed by comments 
 1. Review the log for ERRORS or WARNINGS.  If there are problems, please send a full log to the workgroup leads (contact info at top of workplan), after first making sure the log is redacted of PHI and any site-specific information that your site does not want released. You can refer to the review pdf in the local_only folder for a quick summary of the datasets being returned.
-1. Append the 2020 Decennial Census Data to your existing Decennial Data.
+1. Replace ACS data at your site with these results.
 
 > [!NOTE]
 > The code produces warnings about the length of the variables.  These warnings can be ignored.
 
 Directions to transfer data:
-* Zip files in the ‘share’ folder into one compressed file named:  vdw_census_demog_dec_yyyymmdd_&_siteabbr..zip.
-* Upload the zip file to the HCSRN folder on the [KP Washington SFT](https://projects.kpwashingtonresearch.org/SFT/main/login.aspx)
+* Send files in the QA Section of the HCSRN Teams instance. No PHI is contained in Census Demographics QA.
