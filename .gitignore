@@ -1,0 +1,8 @@
+### Ignore all files except for the .sas files
+*.*
+!*.sas
+!.gitignore
+!*.md
+!sample_census_key.txt
+unit_tests.sas
+run.sas
