@@ -32,17 +32,6 @@
     run;
 %mend base_append;
 
-proc sql noprint; 
-    select variable_group
-    into :variable_group_list separated by ","
-    from _variable_list
-    ;
-    select group_description
-    into :group_description_list separated by ","
-    from _variable_list
-    ;
-quit;
-
 
 * Macro to fetch states;
 %macro get_states();
