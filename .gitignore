@@ -2,7 +2,7 @@
 *.*
 !*.sas
 !.gitignore
-!*.md
+!**.md
 !sample_census_key.txt
 unit_tests.sas
 run.sas
