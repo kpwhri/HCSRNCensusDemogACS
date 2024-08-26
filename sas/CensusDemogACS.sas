@@ -57,6 +57,9 @@ SITE EDITS
 * check out document/sample_census_key.txt for an example;
 /* %include "\\path\to\census_key.txt"; */
 
+* is your network throttling you? let's try "sleep" to give the network a break and hopefully make it go away;
+%let sleep_seconds=0.1;
+
 *---NO EDITS SHOULD BE NEEDED BEYOND THIS POINT---;
 
 *--------------------------------------------
@@ -85,7 +88,8 @@ libname QA_ds "&outshare";
 *Set version of this workplan;
 %let wp_v = 1;
 *Set VDW specification version;
-%let version = 1;
+%let version = 5;
+
 
 
 data _null_;
@@ -137,7 +141,7 @@ filename pdfmain "&outshare./VDW Census ACS ETL &currentMonth. &end_year. &_site
 * currently only works with tract level. Otherwise, you'd need to change the definition of geocode to incorporate geocode; 
 * %get_states is to put the state list into a macro variable;
 * top level is to iterate between years.;
-%macro acs_pipeline(outds, geog=tract, start_year=, end_year=, key=&census_key., new_basetable=true);
+%macro acs_pipeline(outds, geog=tract, start_year=, end_year=, key=&census_key., new_basetable=true, sleep_seconds=0);
     %get_states;
     %put NOTE: STATE_LIST = &state_list.;
     %local i next_state;
@@ -147,6 +151,10 @@ filename pdfmain "&outshare./VDW Census ACS ETL &currentMonth. &end_year. &_site
             %** Fetch the &next_state;
             %let next_state = %scan(&state_list, &i.);
             %put INFO: Retrieving state=&next_state..;   
+            %** sleep if it gets buggy.;
+            data _null_;
+                call sleep(1000, &sleep_seconds.); /* Sleep for 5000 milliseconds (5 seconds) */
+            run;
             %do i2=1 %to %sysfunc(countw(%quote(&variable_group_list.), %str(,)));
                 %** fetch the next_var_group;
                 %let next_vg = %scan(%quote(&variable_group_list.), &i2., %str(,));
