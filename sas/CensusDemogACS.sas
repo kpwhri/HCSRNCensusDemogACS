@@ -86,7 +86,7 @@ libname QA_ds "&outshare";
 *Set the year/month of the program distribution YYYYMM;
 %let era = 202405;
 *Set version of this workplan;
-%let wp_v = 1;
+%let wp_v = 2;
 *Set VDW specification version;
 %let version = 5;
 
