@@ -174,14 +174,18 @@ filename pdfmain "&outshare./VDW Census ACS ETL &currentMonth. &end_year. &_site
 
 
 * Run the pipeline;
-%acs_pipeline(acs_demog_raw, geog=tract, start_year=2012, end_year=2022, key=&census_key., new_basetable=true);
+%acs_pipeline(acs_demog_raw, geog=tract, start_year=2012, end_year=2022, key=&census_key., new_basetable=true, sleep_seconds=&sleep_seconds.);
 
 
 data outlocal.acs_demog_calculated; 
-    set acs_demog_raw;
-    keep geocode year &_siteabbr._area_description &_siteabbr._popsize &acs_demog_keep. ;
-        &_siteabbr._area_description = name;
-        &_siteabbr._popsize = B01001_001E;
+    set acs_demog_raw (rename=(year=census_year));
+    keep geocode census_year &_siteabbr._area_description &_siteabbr._popsize &acs_demog_keep. ;
+        geocode_boundary_year = floor(year(census_year)/10) * 10 ; * this gives us the map vintage;
+        &_siteabbr._area_description = name; * this gives us a human readable name of a geography.;
+        &_siteabbr._popsize = B01001_001E; * this gives us the population of a geography.;
+        state = substr(geocode, 1,2);
+        county = substr(geocode, 3,3);
+        tract = substr(geocode, 5,6);
         &EDUCATION1.;
         &EDUCATION2.;
         &EDUCATION3.;
