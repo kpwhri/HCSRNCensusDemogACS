@@ -68,14 +68,14 @@ SETUP
 
 
 *Set sub-directories;
-libname root "&root";
-%let outlocal = &root/local_only;
+libname root "&root.";
+%let outlocal = &root./local_only;
 libname outlocal "&outlocal.";
-%let input = &root/input;
+%let input = &root./input;
 libname input "&input.";
-%let outshare = &root/share;
+%let outshare = &root./share;
 libname outshare "&outshare.";
-libname QA_ds "&outshare";
+libname QA_ds "&outshare.";
 %let QAoutlib=QA_ds;
 
 %let workplan = vdw_census_demog_acs;
@@ -94,7 +94,7 @@ libname QA_ds "&outshare";
 
 data _null_;
     *For trend cutoffs;
-    call symput('start_year', 2000);
+    call symput('start_year', 2012);
     call symput('end_year', strip(year(today())));
     call symput('currentMonth', strip(put(today(), monname.)));
 
@@ -271,7 +271,52 @@ data outlocal.acs_demog_calculated;
         ;
 run;
 
+
+filename pdfmain "&outshare./VDW Census Demog ACS &currentMonth. &end_year. &_siteabbr..pdf"; 
+ods listing gpath="&outlocal.";
+ods PDF file=pdfmain uniform style=analysis pdftoc=1;
+ods graphics / reset width=90pct height=90pct;
+
+
+* create final dataset;
+proc contents data= outlocal.acs_demog_calculated;
+run;
+
+proc print data=outlocal.acs_demog_calculated(obs=10);
+run;
+
+*-------------------------------------
+CENSUS_DEMOG_ACS: META CHECKS
+--------------------------------------;
+%let uni_vars = census_year geocode_boundary_year EDUCATION1 EDUCATION2 EDUCATION3 EDUCATION4 EDUCATION5 EDUCATION6 EDUCATION7 EDUCATION8 MEDFAMINCOME FAMINCOME1 FAMINCOME2 FAMINCOME3 FAMINCOME4 FAMINCOME5 FAMINCOME6 FAMINCOME7 FAMINCOME8 FAMINCOME9 FAMINCOME10 FAMINCOME11 FAMINCOME12 FAMINCOME13 FAMINCOME14 FAMINCOME15 FAMINCOME16 FAMPOVERTY MEDHOUSINCOME HOUSINCOME1 HOUSINCOME2 HOUSINCOME3 HOUSINCOME4 HOUSINCOME5 HOUSINCOME6 HOUSINCOME7 HOUSINCOME8 HOUSINCOME9 HOUSINCOME10 HOUSINCOME11 HOUSINCOME12 HOUSINCOME13 HOUSINCOME14 HOUSINCOME15 HOUSINCOME16 HOUSPOVERTY POV_LT_50 POV_50_74 POV_75_99 POV_100_124 POV_125_149 POV_150_174 POV_175_184 POV_185_199 POV_GT_200 ENGLISH_SPEAKER SPANISH_SPEAKER BORNINUS MOVEDINLAST12MON MARRIED DIVORCED DISABILITY UNEMPLOYMENT UNEMPLOYMENT_MALE INS_MEDICARE INS_MEDICAID HH_NOCAR HH_PUBLIC_ASSISTANCE HMOWNER_COSTS_MORT HMOWNER_COSTS_NO_MORT HOMES_MEDVALUE PCT_CROWDING FEMALE_HEAD_OF_HH MGR_FEMALE MGR_MALE RESIDENTS_65 SAME_RESIDENCE ;
+
+* Variable type:  1=Numeric   2=Character;
+ods proclabel="Check Variable Existence: CENSUS_DEMOG_ACS";
+%CESR_VLC_TYPE_STMV(  indataset=outlocal.acs_demog_calculated
+                    , vars_and_types=                         
+                        &uni_vars. 1 
+                        geocode state county tract 2                        
+                    , outdataset= &qaoutlib..&content_area._vartype); 
+
+ods proclabel="Check Variable Lengths: CENSUS_DEMOG_ACS";
+%CESR_VLC_Length_STMV(indataset= outlocal.acs_demog_calculated
+                        ,vars_and_lengths=     
+                            geocode 11 
+                            state 2 
+                            county 3 
+                            tract 6 
+                        ,outdataset=&qaoutlib..&content_area._length   
+                        ); 
+
+
+ods proclabel="Examine variable distributions: CENSUS_DEMOG_ACS";
+proc univariate data=outlocal.acs_demog_calculated round=.001;
+    var &uni_vars.;
+    histogram &uni_vars. / normal ;    
+run;
+
 * confirm that all geographies are accounted for;
+ods proclabel="Confirm expected geographies and years are represented";
 proc freq data=acs_demog_calculated;
     tables
         state*year 
@@ -279,7 +324,57 @@ proc freq data=acs_demog_calculated;
         ;
 run;
 
-* make sure the data exists as we expect it;
-proc means data = outlocal.acs_demog_calculated min p1 p25 p50 p75 p99 max mean out=outshare.var_means_lvl1;
+ods pdf close;
+
+*--------------------------------------------
+WRAPPING UP - getting runtime info
+---------------------------------------------;
+
+data _null_;
+    et=datetime();
+    call symput("et",et);
+    call symput ("end_time",put(et,datetime22.3));
 run;
 
+%put &session_date &st &et &start_time &end_time;
+
+
+data outshare.run_time;
+    length SITE $4;
+    SITE="&_SiteAbbr.";
+    real_time=&et-&st;
+    hours=int(real_time/3600);
+    minutes=int((real_time-(hours*3600))/60);
+    seconds=real_time-(hours*3600)-(minutes*60);
+    program_start_time="&start_time.";
+    program_end_time="&end_time.";
+    content_area="&content_area.";
+    era=&era.;
+    work_plan_version="&wp_v.";      
+    vdw_version="&version.";
+run;
+
+data _null_; 
+    set outshare.run_time;
+    put "*********************************";
+    put "*********************************";
+    put "Program start time=&start_time";
+    put "Program end time  =&end_time";    
+    put "real time=" real_time " seconds";
+    put hours= minutes= seconds=;
+    put "*********************************";
+    put "*********************************";
+run;
+
+proc printto log=log print=print;
+run;
+
+*Clean up;
+footnote;    
+title;
+
+ods listing;
+
+*--------------------------------------------
+THE END
+---------------------------------------------;
