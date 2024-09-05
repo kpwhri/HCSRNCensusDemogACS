@@ -1,15 +1,15 @@
 # VDW Census Demographics Decennial ETL
 This is an ETL used to extract data directly from the US Census Bureau's API. The data is then transformed into a SAS dataset. The data is then available to be loaded into a database.
 
-Primary contact: Al Derus
-Institution: KPWHRI
-Email: Alphonse.Derus@kp.org
+> Primary contact: Al Derus  
+> Institution: KPWHRI  
+> Email: Alphonse.Derus@kp.org  
 
 ## Project Stage
 Please run the ETL at your site and incorporate the data in your VDW.
 
 ## Workplan Timeline
-Please complete the workplan by June 1, 2024.
+Please complete the workplan by November 1, 2024.
 
 ## Workplan Package
 Files Included in Zip file:
@@ -25,11 +25,14 @@ Number and Type of Files to be Returned:
 1. 1 log file
 1. 1 PDF file
 1. 1 share_info.md
-1. 4 sas datasets
+1. 2 sas datasets
+  * run_time
+  * state_year_freq
 
 # Running this workplan
 > [!IMPORTANT]
-> Prior to running the plan, you'll need to get an API key from the Census Bureau. If you do not have a key, it will fail. 
+> Prior to running the plan, you'll need to get an API key from the Census Bureau. If you do not have a key, it will fail.  
+
 You can get a key in about two minutes by: 
 1. Go to https://api.census.gov/data/key_signup.html and request a key (you'll need to provide an email address, share your organization, and agree to the terms of service). 
 1. Check your email and copy the key from the email you receive to a text file (e.g., census_key.txt). You can see an example in the documents folder of this workplan "census_key.txt". Example [Census Key](/document/sample_census_key.txt).
