@@ -58,7 +58,7 @@ SITE EDITS
 /* %include "\\path\to\census_key.txt"; */
 
 * is your network throttling you? let's try "sleep" to give the network a break and hopefully make it go away;
-%let sleep_seconds=0.1;
+%let sleep_ms=0;
 
 *---NO EDITS SHOULD BE NEEDED BEYOND THIS POINT---;
 
@@ -180,7 +180,7 @@ filename pdfmain "&outshare./VDW Census ACS ETL &currentMonth. &end_year. &_site
 
 
 * Run the pipeline;
-%acs_pipeline(acs_demog_raw, geog=tract, start_year=2012, end_year=2022, key=&census_key., new_basetable=true, sleep_seconds=&sleep_seconds.);
+%acs_pipeline(acs_demog_raw, geog=tract, start_year=2012, end_year=2022, key=&census_key., new_basetable=true, sleep_ms=&sleep_ms.);
 
 
 data outlocal.acs_demog_calculated; 
