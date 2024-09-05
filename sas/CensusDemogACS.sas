@@ -186,7 +186,7 @@ filename pdfmain "&outshare./VDW Census ACS ETL &currentMonth. &end_year. &_site
 data outlocal.acs_demog_calculated; 
     length geocode $11 state $2 county $3 tract $6;
     set acs_demog_raw (rename=(year=census_year));
-    keep geocode census_year &_siteabbr._area_description &_siteabbr._popsize &acs_demog_keep. ;
+    keep geocode state county tract geocode_boundary_year census_year &_siteabbr._area_description &_siteabbr._popsize &acs_demog_keep. ;
         geocode_boundary_year = floor(census_year/10) * 10 ; * this gives us the map vintage;
         &_siteabbr._area_description = name; * this gives us a human readable name of a geography.;
         &_siteabbr._popsize = B01001_001E; * this gives us the population of a geography.;
