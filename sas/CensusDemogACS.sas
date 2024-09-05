@@ -141,7 +141,7 @@ filename pdfmain "&outshare./VDW Census ACS ETL &currentMonth. &end_year. &_site
 * currently only works with tract level. Otherwise, you'd need to change the definition of geocode to incorporate geocode; 
 * %get_states is to put the state list into a macro variable;
 * top level is to iterate between years.;
-%macro acs_pipeline(outds, geog=tract, start_year=, end_year=, key=&census_key., new_basetable=true, sleep_seconds=0);
+%macro acs_pipeline(outds, geog=tract, start_year=, end_year=, key=&census_key., new_basetable=true, sleep_ms=0);
     %get_states;
     %put NOTE: STATE_LIST = &state_list.;
     %local i next_state;
@@ -152,9 +152,15 @@ filename pdfmain "&outshare./VDW Census ACS ETL &currentMonth. &end_year. &_site
             %let next_state = %scan(&state_list, &i.);
             %put INFO: Retrieving state=&next_state..;   
             %** sleep if it gets buggy.;
-            data _null_;
-                call sleep(1000, &sleep_seconds.); /* Sleep for 5000 milliseconds (5 seconds) */
-            run;
+            %if &sleep_ms > 0 %then %do;
+                %put INFO: Sleeping for &sleep_ms. milliseconds.;
+                data _null_;
+                    call sleep(.001, &sleep_ms.); /* Sleep for 5000 milliseconds (5 seconds) */
+                run;
+            %end;
+            %else %do;
+                %put INFO: Not sleeping.;
+            %end;
             %do i2=1 %to %sysfunc(countw(%quote(&variable_group_list.), %str(,)));
                 %** fetch the next_var_group;
                 %let next_vg = %scan(%quote(&variable_group_list.), &i2., %str(,));
@@ -178,9 +184,10 @@ filename pdfmain "&outshare./VDW Census ACS ETL &currentMonth. &end_year. &_site
 
 
 data outlocal.acs_demog_calculated; 
+    length geocode $11 state $2 county $3 tract $6;
     set acs_demog_raw (rename=(year=census_year));
     keep geocode census_year &_siteabbr._area_description &_siteabbr._popsize &acs_demog_keep. ;
-        geocode_boundary_year = floor(year(census_year)/10) * 10 ; * this gives us the map vintage;
+        geocode_boundary_year = floor(census_year/10) * 10 ; * this gives us the map vintage;
         &_siteabbr._area_description = name; * this gives us a human readable name of a geography.;
         &_siteabbr._popsize = B01001_001E; * this gives us the population of a geography.;
         state = substr(geocode, 1,2);
