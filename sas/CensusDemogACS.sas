@@ -319,7 +319,7 @@ run;
 ods proclabel="Confirm expected geographies and years are represented";
 proc freq data=outlocal.acs_demog_calculated;
     tables
-        state*year 
+        state*census_year 
         / out=outshare.state_year_freq
         ;
 run;
