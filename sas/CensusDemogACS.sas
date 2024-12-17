@@ -180,7 +180,7 @@ filename pdfmain "&outshare./VDW Census ACS ETL &currentMonth. &end_year. &_site
 
 
 * Run the pipeline;
-%acs_pipeline(acs_demog_raw, geog=tract, start_year=2012, end_year=2022, key=&census_key., new_basetable=true, sleep_ms=&sleep_ms.);
+%acs_pipeline(acs_demog_raw, geog=tract, start_year=2012, end_year=2023, key=&census_key., new_basetable=true, sleep_ms=&sleep_ms.);
 
 
 data outlocal.acs_demog_calculated; 
