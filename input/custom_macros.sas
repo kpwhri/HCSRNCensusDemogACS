@@ -223,7 +223,7 @@
         geocode = cats(state,county,tract);
     run;
 
-    proc sort data=&outds.;
+    proc sort data=&outds. nodupkey;
         by geocode;
     run;
 
