@@ -192,7 +192,7 @@ data outlocal.acs_demog_calculated;
         &_siteabbr._popsize = B01001_001E; * this gives us the population of a geography.;
         state = substr(geocode, 1,2);
         county = substr(geocode, 3,3);
-        tract = substr(geocode, 5,6);
+        tract = substr(geocode, 6,6);
         &EDUCATION1.;
         &EDUCATION2.;
         &EDUCATION3.;
